@@ -1,21 +1,68 @@
 # Woke
 
-**TODO: Add description**
+## Monitor a new external resource
 
-## Installation
+Create 2 modules and add the supervisor to your children in application.ex
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `woke` to your list of dependencies in `mix.exs`:
+1. Create the interface for the external resource, for instance one named Postgres:
 
 ```elixir
-def deps do
-  [
-    {:woke, "~> 0.1.0"}
-  ]
+defmodule MyApp.Woke.Postgres do
+  @moduledoc false
+  @behaviour Wore.ExternalResource
+
+  @impl Wore.ExternalResource
+  def try_connect(opts \\ []) do
+    try do
+      true = Postgres.query("my query")
+
+      :connected
+    rescue
+      error ->
+        {:error, error}
+    catch
+      _, error ->
+        {:error, error}
+    end
+  end
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/woke](https://hexdocs.pm/woke).
+2. Configure the external resource being monitored using a GenServer: 
+
+```elixir
+defmodule MyApp.Woke.PostgresConnections do
+  use Supervisor
+  alias Woke.ExternalResource
+  alias MyApp.Woke.Postgres
+
+  def start_link(_opts) do
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  @impl true
+  def init(_opts) do
+    children = all_child_specs()
+    Supervisor.init(children, strategy: :one_for_one)
+  end
+
+  defp all_child_specs() do
+    database_number = [1,2,3]
+
+    Enum.map(database_number, fn shard_id ->
+      opts = [
+        name: "postgres_#{shard_id}",
+        check_every: :timer.seconds(30),
+        try_connect_mod: Postgres,
+        timeout: :timer.seconds(3)
+      ]
+
+      Supervisor.child_spec({ExternalResource, opts}, id: :"postgres_#{shard_id}")
+    end)
+  end
+end
+```
+
+3. Add `MyApp.Woke.PostgresConnections` to your app supervisor children list:
+
 

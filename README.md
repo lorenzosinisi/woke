@@ -65,4 +65,29 @@ end
 
 3. Add `MyApp.Woke.PostgresConnections` to your app supervisor children list:
 
+```
+  use Application
+
+  # See https://hexdocs.pm/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec
+
+   :gen_event.swap_handler(
+        :alarm_handler,
+        {:alarm_handler, :swap},
+        {Woke.AlarmHandler, :ok}
+    )
+
+    # Define workers and child supervisors to be supervised
+    children = [
+      supervisor(MyApp.Endpoint, []),
+      MyApp.Woke.PostgresConnections
+    ]
+
+    opts = [strategy: :one_for_one, name: MyApp.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+```
 

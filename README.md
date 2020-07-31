@@ -65,7 +65,7 @@ end
 
 3. Add `MyApp.Woke.PostgresConnections` to your app supervisor children list:
 
-```
+```elixir
   use Application
 
   # See https://hexdocs.pm/elixir/Application.html

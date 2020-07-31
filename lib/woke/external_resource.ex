@@ -1,4 +1,4 @@
-defmodule Wore.ExternalResource do
+defmodule Woke.ExternalResource do
   use GenServer
   require Logger
   alias Woke.AlarmHandler

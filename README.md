@@ -9,9 +9,9 @@ Create 2 modules and add the supervisor to your children in application.ex
 ```elixir
 defmodule MyApp.Woke.Postgres do
   @moduledoc false
-  @behaviour Wore.ExternalResource
+  @behaviour Woke.ExternalResource
 
-  @impl Wore.ExternalResource
+  @impl Woke.ExternalResource
   def try_connect(opts \\ []) do
     try do
       true = Postgres.query("my query")

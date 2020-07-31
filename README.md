@@ -14,7 +14,7 @@ defmodule MyApp.Woke.Postgres do
   @impl Woke.ExternalResource
   def try_connect(opts \\ []) do
     try do
-      true = Postgres.query("my query")
+      Ecto.Adapters.SQL.query(MyApp.Repo, "select 1", [])
 
       :connected
     rescue

@@ -4,10 +4,10 @@ defmodule Woke.MixProject do
   def project do
     [
       app: :woke,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.10",
       deps: deps(),
-      ddocs: [extras: ["README.md"], main: "readme", source_ref: "v0.1.0"],
+      ddocs: [extras: ["README.md"], main: "RADME.md", source_ref: "v0.1.1"],
       source_url: "https://github.com/lorenzosinisi/woke",
       description: description(),
       package: package(),
